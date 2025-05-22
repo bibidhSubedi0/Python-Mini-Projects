@@ -71,7 +71,7 @@ def read_students(
 
 @app.get("/students/{students_id}")
 def read_student(students_id: int, session: Session = Depends(get_session)) -> Student:
-    student = session.get(Student, students_id)  # Make sure 'Student' is a model class
+    student = session.get(Student, students_id) 
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return student
