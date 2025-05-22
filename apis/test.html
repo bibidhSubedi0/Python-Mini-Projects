@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student API Interface</title>
+</head>
+<body>
+    <h1>Student Records</h1>
+
+    <h2>Add New Student</h2>
+    <label>Name: <input type="text" id="name"></label><br>
+    <label>Age: <input type="number" id="age"></label><br>
+    <label>Fingers: <input type="number" id="fingers"></label><br>
+    <label>Is a Bitch:
+        <select id="is_a_bitch">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+    </label><br><br>
+    <button onclick="addStudent()">Add Student</button>
+    <p id="postResult"></p>
+
+    <h2>All Students</h2>
+    <button onclick="fetchStudents()">Get All Students</button>
+    <pre id="output"></pre>
+
+    <script>
+        const apiUrl = "http://127.0.0.1:8000/students/";
+
+        async function addStudent() {
+            const name = document.getElementById("name").value;
+            const age = parseInt(document.getElementById("age").value);
+            const fingers = parseInt(document.getElementById("fingers").value);
+            const is_a_bitch = document.getElementById("is_a_bitch").value === "true";
+
+            const data = {
+                name: name,
+                age: age,
+                extra: {
+                    fingers: fingers,
+                    is_a_bitch: is_a_bitch
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    document.getElementById("postResult").innerText = "Successfully Inserted";
+                    fetchStudents();  // Refresh student list
+                } else {
+                    document.getElementById("postResult").innerText = "Failed to post data: " + response.status;
+                }
+            } catch (error) {
+                document.getElementById("postResult").innerText = "Error posting data";
+                console.error(error);
+            }
+        }
+
+        async function fetchStudents() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById("output").textContent = "Error fetching data!";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
